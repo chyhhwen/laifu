@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "scss:build": "sass ./input.scss:./input.css",
+    "scss:watch": "sass --watch ./input.scss:./input.css",
+    "tailwind:build": "npx @tailwindcss/cli -i input.css -o output.css",
+    "tailwind:watch": "npx @tailwindcss/cli -i input.css -o output.css -w",
+    "build": "npm run scss:build && npm run tailwind:build",
+    "dev": "npm run tailwind:watch",
+    "webpack:watch": "npx webpack -w"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11",
+    "tippy.js": "^6.3.7"
+  },
+  "devDependencies": {
+    "sass": "^1.89.2",
+    "webpack": "^5.100.2",
+    "webpack-cli": "^6.0.1"
+  }
+}

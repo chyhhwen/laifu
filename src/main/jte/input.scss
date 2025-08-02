@@ -1,0 +1,88 @@
+/* 只引入组件样式，不引入 Tailwind */
+@use 'component/Button';
+@use 'component/tippyer';
+@import "tailwindcss";
+@import 'tippy.js/dist/tippy.css'; // optional for styling
+
+@theme {
+    --color-color1: oklch(0.86 0.17 85);
+    --color-color1-50: oklch(0.79 0.16 85);
+    --color-color2: oklch(0.53 0.15 270);
+    --color-color2-50: oklch(0.61 0.19 270);
+    --color-color3: oklch(0.55 0.25 255);
+    --color-color3-50: oklch(0.59 0.29 255);
+    --color-color4: oklch(0.60 0.10 80);
+    --color-color4-50: oklch(0.69 0.09 80);
+    --color-color5: oklch(0.48 0.06 265);
+    --color-color5-50: oklch(0.59 0.07 265);
+    --color-color6: oklch(0.30 0.02 85);
+    --color-color6-50: oklch(0.44 0.03 85);
+    --color-line: oklch(0.60 0.27 150);
+    --color-line-50: oklch(0.68 0.19 150);
+}
+
+#menu-dropdown {
+    .menuitem-panel{
+
+    }
+    button[role="menuitem"]{
+
+    }
+}
+
+.window-controls {
+    @apply flex items-center justify-items-center space-x-2 absolute right-3 z-50;
+
+    .control-btn {
+        @apply flex items-center justify-center size-5 rounded-full transition-all duration-200 cursor-pointer;
+
+        &:hover {
+            @apply transform scale-110;
+        }
+
+        &.close {
+            @apply bg-red-500 hover:bg-red-600;
+
+            svg {
+                @apply size-3 text-white;
+            }
+        }
+
+        &.minimize {
+            @apply bg-yellow-400 hover:bg-yellow-500;
+
+            svg {
+                @apply size-3 text-white;
+            }
+        }
+
+        &.maximize {
+            @apply bg-green-500 hover:bg-green-600;
+
+            svg {
+                @apply size-3 text-white;
+            }
+        }
+    }
+}
+
+.window {
+    @apply bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 relative h-screen w-screen;
+
+    .window-titlebar {
+        @apply bg-[#313740] px-4 py-2 flex items-center justify-items-center border-b border-gray-200 select-none h-fit;
+
+        .window-title {
+            @apply text-sm font-medium text-white;
+        }
+    }
+
+    .window-content {
+        @apply bg-[#121417] w-full h-full;
+    }
+}
+
+// 拖動調整視窗大小的把手
+.resize-handle {
+    @apply absolute bottom-0 right-0 w-4 h-4 cursor-se-resize;
+}

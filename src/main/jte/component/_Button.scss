@@ -1,0 +1,360 @@
+@reference "tailwindcss";
+
+.outline-btn {
+    @apply mx-2 px-4 py-1 hover:ring-1 hover:ring-slate-200 hover:shadow-lg focus:ring-1 focus:ring-slate-200 focus:shadow-lg w-fit rounded-4xl checked:ring-1 checked:ring-slate-200 checked:shadow-lg select-none;
+}
+
+.outline-btn-blue {
+    @apply hover:bg-blue-500 hover:text-white focus:bg-blue-500 focus:text-white checked:bg-blue-500 checked:text-white;
+}
+
+.btn-group {
+    @apply flex cursor-pointer;
+    .btn:first-child,.first {
+        @apply rounded-l rounded-r-none;
+    }
+
+    // 如果有使用 tippyer 於 btn-group 請對最後元件添加 last class
+    .btn:not(:first-child,:last-child,.last,.first){
+        border-radius: unset !important;
+    }
+
+    .btn:last-child,.last {
+        @apply rounded-r rounded-l-none;
+    }
+
+    .btn:active {
+        box-shadow: none !important;
+    }
+}
+
+.btn-group-tab {
+    @apply flex cursor-pointer;
+    .btn:first-child {
+        @apply rounded-l rounded-r-none;
+    }
+
+    .btn:not(:first-child,:last-child) {
+        border-radius: unset !important;
+    }
+
+    .btn:last-child {
+        @apply rounded-r rounded-l-none;
+    }
+
+    .btn:active {
+        box-shadow: none !important;
+    }
+
+    .btn {
+        @apply rounded-none ;
+    }
+}
+
+.btn-group-border-2-slate {
+    .btn {
+        @apply border-r-2 border-solid border-slate-200;
+        border-right: solid 2px rgb(226 232 240) !important;
+    }
+
+    .btn:last-child[rel=next] {
+        border-right: none !important;
+    }
+}
+
+.btn-md {
+    padding: 0.5rem 1rem !important;
+}
+
+.btn-md-strip {
+    padding: 0.25rem 1rem !important;
+}
+
+a.btn {
+    display: flex;
+    align-items: center;
+}
+
+.btn-dead {
+    @apply bg-slate-300 shadow-none cursor-not-allowed;
+    cursor: not-allowed !important;
+
+    &:hover {
+        box-shadow: none !important;
+    }
+}
+
+.switch {
+    @apply relative inline-block select-none cursor-pointer;
+    .switch-border {
+        @apply pointer-events-auto h-6 w-10 rounded-full p-1 ring-1 ring-inset transition duration-500 ease-in-out bg-slate-900/10 ring-slate-900/5;
+        .switch-dot {
+            @apply h-4 w-4 rounded-full bg-white shadow-sm ring-1 ring-slate-700/10 transition duration-500 ease-in-out;
+        }
+    }
+}
+
+.switch.active {
+    .switch-border {
+        @apply bg-amber-300 ;
+        .switch-dot {
+            @apply translate-x-4 ;
+        }
+    }
+}
+
+.btn {
+    @apply border-2 border-solid cursor-pointer px-2 py-1 rounded select-none w-fit hover:shadow-2xl;
+}
+
+.btn-line {
+    @apply bg-line border-line-50 hover:bg-line-50;
+    transition: all 200ms !important;
+
+    &:focus {
+        @apply hover:bg-line-50;
+    }
+
+    &:active {
+        @apply ring-line ring-2 ring-offset-2;
+    }
+}
+
+.btn-ok, .btn-success {
+    @apply bg-green-600 border-green-500 hover:bg-green-500;
+    transition: all 200ms !important;
+
+    &:focus {
+        @apply bg-green-500;
+    }
+
+    &:active {
+        @apply ring-green-600 ring-2 ring-offset-2;
+    }
+}
+
+.btn-cancel {
+    @apply bg-slate-300 border-slate-200 hover:bg-slate-100;
+    transition: all 200ms !important;
+
+    &:focus {
+        @apply bg-slate-100;
+    }
+
+    &:active {
+        @apply ring-slate-300 ring-2 ring-offset-2;
+    }
+}
+
+.btn-error {
+    @apply bg-red-500 border-red-400 hover:bg-red-400;
+    transition: all 200ms !important;
+
+    &:focus {
+        @apply bg-red-400;
+    }
+
+    &:not(&~.btn-group):active {
+        @apply ring-red-500 ring-2 ring-offset-2;
+    }
+}
+
+.btn-warning {
+    @apply bg-yellow-400 border-yellow-300 hover:bg-yellow-300 text-black;
+    transition: all 200ms !important;
+
+    &:focus {
+        @apply bg-yellow-300;
+    }
+
+    &:not(&~.btn-group):active {
+        @apply ring-yellow-400 ring-2 ring-offset-2;
+    }
+}
+
+
+.btn-max {
+    @apply w-full;
+}
+
+.btn-center {
+    @apply flex justify-center items-center;
+}
+
+.btn-text-center {
+    @apply text-center;
+}
+
+.btn-right-center {
+    @apply text-end;
+}
+
+.btn-bold {
+    @apply font-bold;
+}
+
+.btn-color2 {
+    @apply bg-color2 border-color2-50;
+    transition: all 200ms !important;
+
+    &:hover {
+        @apply bg-color2-50;
+    }
+
+    &:focus {
+        @apply bg-color2-50;
+    }
+
+    &:active:not(.btn-group) {
+        @apply ring-color2 ring-2 ring-offset-2;
+    }
+}
+
+.btn-color3 {
+    @apply bg-color3 border-color3-50;
+    transition: all 200ms !important;
+
+    &:hover {
+        @apply bg-color3-50;
+    }
+
+    &:focus {
+        @apply bg-color3-50;
+    }
+
+    &:active:not(.btn-group) {
+        @apply ring-color3 ring-2 ring-offset-2;
+    }
+}
+
+.btn-color4 {
+    @apply bg-color4 border-color4-50;
+    transition: all 200ms !important;
+
+    &:hover {
+        @apply bg-color4-50;
+    }
+
+    &:focus {
+        @apply bg-color4-50;
+    }
+
+    &:active:not(.btn-group) {
+        @apply ring-color4 ring-2 ring-offset-2;
+    }
+}
+
+.btn-color5 {
+    @apply bg-color5 border-color5-50;
+    transition: all 200ms !important;
+
+    &:hover {
+        @apply bg-color5-50;
+    }
+
+    &:focus {
+        @apply bg-color5-50;
+    }
+
+    &:active:not(.btn-group) {
+        @apply ring-color5 ring-2 ring-offset-2;
+    }
+}
+
+.btn-color6 {
+    @apply bg-color6 border-color6-50;
+    transition: all 200ms !important;
+
+    &:hover {
+        @apply bg-color6-50;
+    }
+
+    &:focus {
+        @apply bg-color6-50;
+    }
+
+    &:active:not(.btn-group) {
+        @apply ring-color6 ring-2 ring-offset-2;
+    }
+}
+
+.btn-pill {
+    @apply rounded-4xl;
+}
+
+.btn-circle {
+    @apply flex justify-center items-center size-12 border-2 border-solid rounded-4xl cursor-pointer select-none;
+}
+
+.btn-bottom-group {
+    @apply absolute bottom-0 left-0 flex w-full border-t-2 border-solid border-t-slate-200;
+    .btn {
+        @apply px-4 py-4 w-full rounded-none border-solid border-slate-200;
+        border-top: none;
+        border-left: none;
+        border-bottom: none;
+
+        &:last-child {
+            @apply border-r-0 rounded-br-md;
+        }
+
+        &:first-child {
+            @apply rounded-bl-md;
+        }
+    }
+}
+
+.btn-border-0 {
+    border: 0 !important;
+}
+
+.btn-transition {
+    transition: background 400ms;
+}
+
+.btn-float-right-0-bottom-0 {
+    @apply absolute right-0 bottom-0;
+    position: absolute !important;
+}
+
+.btn-float-center-bottom-0 {
+    @apply absolute left-1/3 bottom-0;
+    position: absolute !important;
+}
+
+.-btn-float-center-bottom-16 {
+    @apply absolute left-1/3 -bottom-4;
+    position: absolute !important;
+}
+
+.-btn-float-right-16-bottom-16 {
+    @apply absolute -right-4 -bottom-4;
+    position: absolute !important;
+}
+
+.btn-ripple, .cg-buttons{
+    position: relative;
+    overflow: hidden;
+    outline: 0;
+    //box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3); /* black with 30% opacity */
+    cursor: pointer;
+    z-index: 10;
+
+    span.ripple {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 600ms linear;
+        background-color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
