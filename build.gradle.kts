@@ -101,16 +101,25 @@ tasks.withType<JavaExec>().configureEach {
 	jvmArgs(jcefJvmArgs)
 }
 
-// --- jpackage 自動打包任務 ---
+// --- jpackage 多平台自動打包任務 ---
 tasks.register<Exec>("packageApp") {
 	group = "distribution"
-	description = "Packages the application into a standalone macOS .app bundle using jpackage."
+	description = "Packages the application into a standalone native bundle based on the current OS."
 
 	dependsOn("bootJar")
 
 	val jarName = "${project.name}-${project.version}.jar"
 	val outputDir = layout.buildDirectory.dir("dist").get().asFile.absolutePath
 	val inputDir = layout.buildDirectory.dir("libs").get().asFile.absolutePath
+	val osName = System.getProperty("os.name").lowercase()
+
+	// 根據作業系統決定打包類型
+	val type = when {
+		osName.contains("mac") -> "app-image" // 產出 .app 目錄，若要安裝檔改為 "dmg"
+		osName.contains("win") -> "exe"
+		osName.contains("linux") -> "deb"
+		else -> "app-image"
+	}
 
 	// 確保輸出目錄存在
 	doFirst {
@@ -119,26 +128,41 @@ tasks.register<Exec>("packageApp") {
 		distDir.mkdirs()
 	}
 
-	commandLine(
+	val jpackageArgs = mutableListOf(
 		"jpackage",
 		"--input", inputDir,
 		"--dest", outputDir,
 		"--name", "FuChat",
 		"--main-jar", jarName,
 		"--main-class", "org.springframework.boot.loader.launch.JarLauncher",
-		"--mac-package-identifier", "com.laifu.fuchat",
-		"--type", "app-image",
-		// "--icon", "chi.gif", // macOS 僅支援 .icns，暫時註解
-		"--java-options", "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
-		"--java-options", "--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
-		"--java-options", "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
-		"--java-options", "-Djava.awt.headless=false",
-		"--java-options", "-Dspring.profiles.active=prod",
+		"--type", type,
 		"--vendor", "Laifu",
-		"--app-version", "1.0.0"
+		"--app-version", "1.0.0",
+		"--java-options", "-Djava.awt.headless=false",
+		"--java-options", "-Dspring.profiles.active=prod"
 	)
 
+	// macOS 特有參數
+	if (osName.contains("mac")) {
+		jpackageArgs.addAll(listOf(
+			"--mac-package-identifier", "com.laifu.fuchat",
+			"--java-options", "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
+			"--java-options", "--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
+			"--java-options", "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED"
+		))
+	}
+
+	// Windows 特有參數
+	if (osName.contains("win")) {
+		jpackageArgs.addAll(listOf(
+			"--win-shortcut",
+			"--win-menu"
+		))
+	}
+
+	commandLine(jpackageArgs)
+
 	doLast {
-		println("打包完成！你可以在這裡找到產出物：$outputDir/FuChat.app")
+		println("打包完成！類型: $type, 產出物在: $outputDir")
 	}
 }
