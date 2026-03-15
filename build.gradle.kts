@@ -116,8 +116,8 @@ tasks.register<Exec>("packageApp") {
 	// 根據作業系統決定打包類型
 	val type = when {
 		osName.contains("mac") -> "app-image" // 產出 .app 目錄，若要安裝檔改為 "dmg"
-		osName.contains("win") -> "exe"
-		osName.contains("linux") -> "deb"
+		osName.contains("win") -> "app-image" // 改為 "app-image" 以避免依賴 WiX，若要安裝檔則改回 "exe" 或 "msi"
+		osName.contains("linux") -> "app-image" // 改為 "app-image"
 		else -> "app-image"
 	}
 
@@ -142,6 +142,16 @@ tasks.register<Exec>("packageApp") {
 		"--java-options", "-Dspring.profiles.active=prod"
 	)
 
+	// 設定圖標 (Windows: .ico, macOS: .icns, Linux: .png)
+	val iconFile = when {
+		osName.contains("win") -> file("chi.ico")
+		osName.contains("mac") -> file("chi.icns")
+		else -> file("chi.png")
+	}
+	if (iconFile.exists()) {
+		jpackageArgs.addAll(listOf("--icon", iconFile.absolutePath))
+	}
+
 	// macOS 特有參數
 	if (osName.contains("mac")) {
 		jpackageArgs.addAll(listOf(
@@ -152,12 +162,18 @@ tasks.register<Exec>("packageApp") {
 		))
 	}
 
-	// Windows 特有參數
-	if (osName.contains("win")) {
+	if (osName.contains("win") && (type == "exe" || type == "msi")) {
 		jpackageArgs.addAll(listOf(
 			"--win-shortcut",
 			"--win-menu"
 		))
+	}
+
+	doFirst {
+		println("正在執行 jpackage，參數：$jpackageArgs")
+		val distDir = file(outputDir)
+		if (distDir.exists()) distDir.deleteRecursively()
+		distDir.mkdirs()
 	}
 
 	commandLine(jpackageArgs)
