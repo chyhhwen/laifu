@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::body})}">
+<body>
+<script src="/dist/chat.js" defer></script>
+
+<div class="flex flex-col gap-3">
+  <div class="flex items-center gap-3">
+    <div class="text-white text-xl font-bold">AI Chat Hub</div>
+    <div class="text-[#9dabb8] text-sm">（非串流 MVP）</div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <label class="text-white text-sm" for="provider">Provider Profile</label>
+    <select id="provider" class="rounded px-2 py-1"></select>
+    <a href="/settings" class="text-sm" style="color:#9dabb8;">管理</a>
+  </div>
+
+  <div id="log" class="rounded border border-[#3f4750] bg-[#1d2125] p-3 text-white min-h-[240px]"></div>
+
+  <div class="flex gap-2">
+    <input id="msg" type="text" placeholder="輸入訊息..." class="flex-1 rounded px-3 py-2" />
+    <button id="send" class="rounded px-3 py-2 bg-[#2b3036] text-white" type="button">送出</button>
+  </div>
+
+  <div class="text-[#9dabb8] text-xs">
+    API：<code>/api/ai/chat</code>（同源 <code>POST</code> JSON）
+  </div>
+</div>
+</body>
+</html>

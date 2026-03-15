@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 目前專案仍在用 htmx（先保留）。若後續完全不用可再移除 -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"
+          integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm"
+          crossorigin="anonymous"></script>
+
+  <!-- 由 JTE output.css 搬到 static/output.css -->
+  <link href="/output.css" rel="stylesheet" />
+
+  <!-- 桌面視窗控制：同源 POST 到 Spring API -->
+  <script src="/desktop-window-controls.js" defer></script>
+
+  <!-- 簡易下拉選單行為（取代舊的 tippy/dropdown 套件） -->
+  <script>
+    (function () {
+      function closeAll() {
+        document.querySelectorAll('.dropdown').forEach(function (d) {
+          d.classList.add('hidden');
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-dropdown]');
+        if (!btn) {
+          // 點到 dropdown 內部不關
+          if (e.target.closest('.dropdown')) return;
+          closeAll();
+          return;
+        }
+
+        e.preventDefault();
+        var sel = btn.getAttribute('data-dropdown');
+        if (!sel) return;
+        var dropdown = document.querySelector(sel);
+        if (!dropdown) return;
+
+        // 先關其他，再切換自己
+        var isHidden = dropdown.classList.contains('hidden');
+        closeAll();
+        if (isHidden) dropdown.classList.remove('hidden');
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAll();
+      });
+    })();
+  </script>
+
+  <title th:text="${title}">Fu</title>
+</head>
+<body>
+<div class="window w-96 h-72">
+  <!-- 視窗標題欄（永遠顯示） -->
+  <div class="window-titlebar">
+    <div class="window-title" th:text="${title}">AI Chat Hub</div>
+
+    <div class="window-controls">
+      <!--<button class="control-btn minimize" type="button" title="Minimize">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button class="control-btn maximize" type="button" title="Maximize">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4 4a1 1 0 011-1h10a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4zm1 0v10h10V4H5z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button class="control-btn close" type="button" title="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>-->
+    </div>
+  </div>
+
+  <!-- 視窗內容區（改成 Chat Hub 導向） -->
+  <div class="window-content">
+    <div class="relative flex size-full min-h-screen flex-col bg-[#121417] dark group/design-root overflow-x-hidden"
+         style='font-family: Manrope, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#2b3036] px-10 py-3">
+          <div class="flex items-center gap-4 text-white">
+            <div class="size-4">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+              </svg>
+            </div>
+            <a href="/chat" class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Fu</a>
+          </div>
+
+          <div th:replace="~{fragments/menu :: menu(authed=${authed})}"></div>
+        </header>
+
+        <main class="px-10 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div th:replace="${content}"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <div class="resize-handle"></div>
+</div>
+</body>
+</html>

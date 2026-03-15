@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::body})}">
+<body>
+<div class="flex flex-col gap-4">
+  <h1 class="text-2xl font-bold">設定</h1>
+
+  <div th:if="${error}" class="rounded border border-[#7f1d1d] bg-[#1d2125] p-3">
+    <div class="font-bold" style="color:#fecaca;">儲存失敗</div>
+    <div class="text-sm" style="color:#fecaca;" th:text="${error}"></div>
+  </div>
+
+  <div th:if="${saved}" class="rounded border border-[#3f4750] bg-[#1d2125] p-3">
+    <div class="font-bold">已儲存</div>
+    <div th:if="${active != null}" class="text-sm" style="color:#9dabb8;">
+      <div>Active Profile：<span th:text="${active.name}"></span>（<span th:text="${active.type}"></span>）</div>
+      <div>Base URL：<span th:text="${active.baseUrl}"></span></div>
+      <div>Model：<span th:text="${active.model}"></span></div>
+      <div>API Key：<span th:text="${activeApiKeyMasked}"></span></div>
+    </div>
+  </div>
+
+  <div class="rounded border border-[#3f4750] bg-[#1d2125] p-4">
+    <div class="text-sm font-bold mb-3">Provider Profiles</div>
+
+    <div class="flex flex-col gap-2">
+      <div th:if="${profiles == null || profiles.isEmpty()}" style="color:#9dabb8;">尚未建立任何 profile。</div>
+
+      <div th:each="p : ${profiles}" class="flex items-center justify-between gap-3 rounded border border-[#3f4750] bg-[#121417] p-3">
+        <div class="flex flex-col">
+          <div class="font-bold">
+            <span th:text="${p.name}"></span>
+            <span th:if="${p.active}" class="text-xs" style="color:#9dabb8;">（active）</span>
+          </div>
+          <div class="text-sm" style="color:#9dabb8;">
+            <span th:text="${p.type}"></span>
+            <span> · </span>
+            <span th:text="${p.baseUrl}"></span>
+            <span th:if="${p.model != null}"> · </span>
+            <span th:if="${p.model != null}" th:text="${p.model}"></span>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="button" class="rounded px-3 py-2 bg-[#2b3036] text-sm"
+                  th:data-name="${p.name}"
+                  th:data-type="${p.type}"
+                  th:data-base-url="${p.baseUrl}"
+                  th:data-model="${p.model}"
+                  onclick="handleEdit(this)">編輯</button>
+
+          <form method="post" action="/settings/profiles/activate" class="inline">
+            <input type="hidden" name="id" th:value="${p.id}" />
+            <button type="submit" class="rounded px-3 py-2 bg-[#2b3036] text-sm" th:disabled="${p.active}">使用</button>
+          </form>
+
+          <form method="post" action="/settings/profiles/delete" class="inline" onsubmit="return confirm('確定要刪除此 Profile 嗎？')">
+            <input type="hidden" name="id" th:value="${p.id}" />
+            <button type="submit" class="rounded px-3 py-2 bg-[#7f1d1d] text-sm" th:disabled="${p.active}">刪除</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <form id="profileForm" method="post" action="/settings/profiles" class="flex flex-col gap-3">
+      <div class="text-sm font-bold">新增/更新 Profile</div>
+      <div class="text-xs text-[#9dabb8]">提示：若名稱相同則會更新現有 Profile。</div>
+
+      <label class="text-sm" for="name">Profile Name</label>
+      <input id="name" name="name" type="text" class="rounded px-3 py-2 bg-[#121417] border border-[#3f4750]" placeholder="例如：公司 OpenAI / 本機 Ollama" required />
+
+      <label class="text-sm" for="type">Type</label>
+      <select id="type" name="type" class="rounded px-3 py-2 bg-[#121417] border border-[#3f4750]" required>
+        <option value="openai">openai</option>
+        <option value="openaiCompatible">openaiCompatible</option>
+        <option value="anthropic">anthropic</option>
+        <option value="anthropicCompatible">anthropicCompatible</option>
+      </select>
+
+      <label class="text-sm" for="baseUrl">API Base URL</label>
+      <input id="baseUrl" name="baseUrl" type="text" class="rounded px-3 py-2 bg-[#121417] border border-[#3f4750]" placeholder="https://api.openai.com" required />
+
+      <label class="text-sm" for="model">Model</label>
+      <input id="model" name="model" type="text" class="rounded px-3 py-2 bg-[#121417] border border-[#3f4750]" placeholder="gpt-4o-mini / claude-3-5-sonnet-latest" required />
+
+      <label class="text-sm" for="apiKey">API Key</label>
+      <input id="apiKey" name="apiKey" type="password" class="rounded px-3 py-2 bg-[#121417] border border-[#3f4750]" placeholder="留空則不覆蓋既有 key" />
+
+      <div>
+        <button type="submit" class="rounded px-3 py-2 bg-[#2b3036]">儲存 Profile</button>
+        <button type="button" class="rounded px-3 py-2 bg-[#121417] border border-[#3f4750]" onclick="resetProfileForm()">重設</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="flex gap-2">
+    <a href="/chat" class="rounded px-3 py-2 bg-[#2b3036] inline-block">返回 Chat</a>
+  </div>
+</div>
+
+<script>
+  function handleEdit(btn) {
+    document.getElementById('name').value = btn.getAttribute('data-name');
+    document.getElementById('type').value = btn.getAttribute('data-type');
+    document.getElementById('baseUrl').value = btn.getAttribute('data-base-url');
+    document.getElementById('model').value = btn.getAttribute('data-model');
+    document.getElementById('apiKey').value = ''; // 編輯時預設不顯示 key，留空不更新
+    document.getElementById('name').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function resetProfileForm() {
+    document.getElementById('profileForm').reset();
+  }
+</script>
+</body>
+</html>

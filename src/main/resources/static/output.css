@@ -53,6 +53,20 @@
     -webkit-text-decoration: inherit;
     text-decoration: inherit;
   }
+
+  /* 全站預設：白字 + 深色背景（避免未加 class 的文字變黑） */
+  body {
+    background-color: #121417;
+    color: #ffffff;
+  }
+
+  input, select, textarea {
+    color: #ffffff;
+  }
+
+  ::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+  }
   b, strong {
     font-weight: bolder;
   }
@@ -1198,7 +1212,6 @@ a.btn {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  border-radius: var(--radius-lg, 0.5rem);
   border-style: var(--tw-border-style);
   border-width: 1px;
   border-color: var(--color-gray-200, oklch(92.8% 0.006 264.531));
@@ -1345,46 +1358,57 @@ a.btn {
 @property --tw-blur {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-brightness {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-contrast {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-grayscale {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-hue-rotate {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-invert {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-opacity {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-saturate {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-sepia {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-drop-shadow {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-drop-shadow-color {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-drop-shadow-alpha {
   syntax: "<percentage>";
@@ -1394,14 +1418,17 @@ a.btn {
 @property --tw-drop-shadow-size {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-duration {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-ease {
   syntax: "*";
   inherits: false;
+  initial-value: initial;
 }
 @property --tw-translate-x {
   syntax: "*";

@@ -2,7 +2,6 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.5.4"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("gg.jte.gradle") version "3.1.16"
 	id("org.asciidoctor.jvm.convert") version "3.3.2"
 	kotlin("jvm") version "1.9.24"
 }
@@ -15,9 +14,7 @@ java {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
-tasks.named("compileKotlin") {
-	dependsOn("generateJte")
-}
+
 configurations.all {
 	resolutionStrategy.eachDependency {
 		if (requested.group == "org.jetbrains.kotlin") {
@@ -41,13 +38,14 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	//implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
-	implementation("gg.jte:jte-spring-boot-starter-3:3.1.16")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("io.github.wimdeblauwe:htmx-spring-boot:4.0.1")
 	implementation("io.sentry:sentry-spring-boot-starter-jakarta")
 	//implementation("org.springframework.ai:spring-ai-starter-model-anthropic")
 	//implementation("org.springframework.ai:spring-ai-starter-model-openai")
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
+	// implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
 	//implementation("org.springframework.session:spring-session-data-redis")
 	implementation("org.springframework.session:spring-session-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -72,10 +70,6 @@ dependencyManagement {
 	}
 }
 
-jte {
-	generate()
-	binaryStaticContent = true
-}
 
 tasks.withType<Test> {
 	useJUnitPlatform()
@@ -88,4 +82,63 @@ tasks.test {
 tasks.asciidoctor {
 	inputs.dir(project.extra["snippetsDir"]!!)
 	dependsOn(tasks.test)
+}
+
+// JCEF（jcefmaven）在 JDK 9+ 會觸發 JPMS 強封裝限制，需要顯式打開/導出部分 AWT 內部包。
+// 否則在 macOS 上會報：IllegalAccessError: cannot access class sun.awt.AWTAccessor
+val jcefJvmArgs = listOf(
+	"--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
+	"--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
+	"--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED"
+)
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+	jvmArgs(jcefJvmArgs)
+}
+
+tasks.withType<JavaExec>().configureEach {
+	// 覆蓋其他 JavaExec（例如自定義 launcher）啟動時的行為
+	jvmArgs(jcefJvmArgs)
+}
+
+// --- jpackage 自動打包任務 ---
+tasks.register<Exec>("packageApp") {
+	group = "distribution"
+	description = "Packages the application into a standalone macOS .app bundle using jpackage."
+
+	dependsOn("bootJar")
+
+	val jarName = "${project.name}-${project.version}.jar"
+	val outputDir = layout.buildDirectory.dir("dist").get().asFile.absolutePath
+	val inputDir = layout.buildDirectory.dir("libs").get().asFile.absolutePath
+
+	// 確保輸出目錄存在
+	doFirst {
+		val distDir = file(outputDir)
+		if (distDir.exists()) distDir.deleteRecursively()
+		distDir.mkdirs()
+	}
+
+	commandLine(
+		"jpackage",
+		"--input", inputDir,
+		"--dest", outputDir,
+		"--name", "FuChat",
+		"--main-jar", jarName,
+		"--main-class", "org.springframework.boot.loader.launch.JarLauncher",
+		"--mac-package-identifier", "com.laifu.fuchat",
+		"--type", "app-image",
+		// "--icon", "chi.gif", // macOS 僅支援 .icns，暫時註解
+		"--java-options", "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
+		"--java-options", "--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
+		"--java-options", "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
+		"--java-options", "-Djava.awt.headless=false",
+		"--java-options", "-Dspring.profiles.active=prod",
+		"--vendor", "Laifu",
+		"--app-version", "1.0.0"
+	)
+
+	doLast {
+		println("打包完成！你可以在這裡找到產出物：$outputDir/FuChat.app")
+	}
 }
