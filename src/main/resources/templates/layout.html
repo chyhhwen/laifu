@@ -15,6 +15,42 @@
   <!-- 桌面視窗控制：同源 POST 到 Spring API -->
   <script src="/desktop-window-controls.js" defer></script>
 
+  <!-- 簡易下拉選單行為（取代舊的 tippy/dropdown 套件） -->
+  <script>
+    (function () {
+      function closeAll() {
+        document.querySelectorAll('.dropdown').forEach(function (d) {
+          d.classList.add('hidden');
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-dropdown]');
+        if (!btn) {
+          // 點到 dropdown 內部不關
+          if (e.target.closest('.dropdown')) return;
+          closeAll();
+          return;
+        }
+
+        e.preventDefault();
+        var sel = btn.getAttribute('data-dropdown');
+        if (!sel) return;
+        var dropdown = document.querySelector(sel);
+        if (!dropdown) return;
+
+        // 先關其他，再切換自己
+        var isHidden = dropdown.classList.contains('hidden');
+        closeAll();
+        if (isHidden) dropdown.classList.remove('hidden');
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAll();
+      });
+    })();
+  </script>
+
   <title th:text="${title}">Fu</title>
 </head>
 <body>
@@ -24,7 +60,7 @@
     <div class="window-title" th:text="${title}">AI Chat Hub</div>
 
     <div class="window-controls">
-      <button class="control-btn minimize" type="button" title="Minimize">
+      <!--<button class="control-btn minimize" type="button" title="Minimize">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" clip-rule="evenodd" />
         </svg>
@@ -38,7 +74,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
         </svg>
-      </button>
+      </button>-->
     </div>
   </div>
 

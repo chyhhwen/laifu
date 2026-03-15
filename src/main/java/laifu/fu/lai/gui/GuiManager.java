@@ -1,5 +1,6 @@
 package laifu.fu.lai.gui;
 
+import com.jogamp.opengl.math.VectorUtil;
 import laifu.fu.lai.component.CGComponent;
 import org.cef.CefApp;
 
@@ -17,6 +18,10 @@ import java.util.List;
  */
 public class GuiManager {
     private JFrame frame;
+
+    public JFrame getFrame() {
+        return frame;
+    }
     private final List<CGComponent> handlers = new ArrayList<>();
 
     /** Register a component to be managed. */
@@ -28,10 +33,11 @@ public class GuiManager {
     /** Display the window and enable all registered components. */
     public void show() {
         frame = new JFrame("Fu Desktop App");
-        frame.setUndecorated(true); // 隱藏所有外框與標題欄
+        //frame.setUndecorated(true); // 隱藏所有外框與標題欄
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);    // 默认窗口全屏
-        frame.setLocationRelativeTo(null);
+        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+        frame.setLocation(pointerInfo.getLocation());
 
         JPanel dragPanel = new JPanel();
         dragPanel.setPreferredSize(new Dimension(0, 10)); // 高 40px
@@ -40,14 +46,14 @@ public class GuiManager {
         // 掛上拖曳事件
         int border = 10;
         ResizeWindowHandler resizeHandler = new ResizeWindowHandler(frame, border);
-        frame.addMouseListener(resizeHandler);
-        frame.addMouseMotionListener(resizeHandler);
         DragWindowHandler dragWindowHandler = new DragWindowHandler(frame);
-        dragPanel.addMouseListener(dragWindowHandler);
-        dragPanel.addMouseMotionListener(dragWindowHandler);
+        frame.addMouseListener(dragWindowHandler);
+        frame.addMouseMotionListener(dragWindowHandler);
+        //dragPanel.addMouseListener(dragWindowHandler);
+        //dragPanel.addMouseMotionListener(dragWindowHandler);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(dragPanel, BorderLayout.NORTH);
+        //mainPanel.add(dragPanel, BorderLayout.NORTH);
 
         JPanel stackPanel = new JPanel();
         stackPanel.setLayout(new BoxLayout(stackPanel, BoxLayout.Y_AXIS));

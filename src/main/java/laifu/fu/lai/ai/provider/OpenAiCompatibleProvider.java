@@ -17,6 +17,7 @@ import java.util.Map;
  */
 public class OpenAiCompatibleProvider implements ChatProvider {
 
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(OpenAiCompatibleProvider.class);
     private final WebClient webClient;
     private final AiProperties props;
     private final String name;
@@ -42,10 +43,19 @@ public class OpenAiCompatibleProvider implements ChatProvider {
         payload.put("model", props.getOpenai().getModel());
         payload.put("messages", messages);
 
+        String baseUrl = props.getOpenai().getBaseUrl();
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
+
+        String apiKey = props.getOpenai().getApiKey();
+        String maskedKey = (apiKey == null || apiKey.length() < 8) ? "null" : apiKey.substring(0, 7) + "...";
+        LOGGER.info("[{}] Sending request to {} with model {} (Key: {})", name, baseUrl, props.getOpenai().getModel(), maskedKey);
+
         OpenAiChatCompletionsResponse resp = webClient.post()
-                .uri("/v1/chat/completions")
+                .uri(baseUrl + "/v1/chat/completions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + props.getOpenai().getApiKey())
+                .header("Authorization", "Bearer " + apiKey)
                 .bodyValue(payload)
                 .retrieve()
                 .bodyToMono(OpenAiChatCompletionsResponse.class)

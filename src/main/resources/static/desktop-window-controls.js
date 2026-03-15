@@ -8,15 +8,28 @@
 
   document.addEventListener('click', function (e) {
     const btn = e.target.closest('.control-btn');
-    if (!btn) return;
+    const actionEl = e.target.closest('[data-desktop-action]');
+    if (!btn && !actionEl) return;
 
-    if (btn.classList.contains('minimize')) {
+    if (btn) {
+      if (btn.classList.contains('minimize')) {
+        e.preventDefault();
+        post('/api/desktop/window/minimize');
+      } else if (btn.classList.contains('maximize')) {
+        e.preventDefault();
+        post('/api/desktop/window/maximize-toggle');
+      } else if (btn.classList.contains('close')) {
+        e.preventDefault();
+        post('/api/desktop/window/close');
+      }
+      return;
+    }
+
+    const action = actionEl.getAttribute('data-desktop-action');
+    if (action === 'devtools') {
       e.preventDefault();
-      post('/api/desktop/window/minimize');
-    } else if (btn.classList.contains('maximize')) {
-      e.preventDefault();
-      post('/api/desktop/window/maximize-toggle');
-    } else if (btn.classList.contains('close')) {
+      post('/api/desktop/window/devtools');
+    } else if (action === 'close') {
       e.preventDefault();
       post('/api/desktop/window/close');
     }

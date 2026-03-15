@@ -41,8 +41,13 @@ public class AnthropicCompatibleProvider implements ChatProvider {
                 "content", List.of(Map.of("type", "text", "text", userText))
         )));
 
+        String baseUrl = props.getAnthropicCompatible().getBaseUrl();
+        if (baseUrl.endsWith("/")) {
+            baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+        }
+
         AnthropicProvider.AnthropicMessagesResponse resp = webClient.post()
-                .uri("/v1/messages")
+                .uri(baseUrl + "/v1/messages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header("x-api-key", props.getAnthropicCompatible().getApiKey())
